@@ -1,28 +1,58 @@
 <script lang="ts">
-    let haiku: string = "";
-    let error: string = "";
+    let languages = ['Korean', 'Japanese', 'Vietnamese'];
 
-    async function fetchHaiku() {
+	let selected = '';
+	let prompt = '';
+    let context = '';
+    let error = '';
+
+    async function fetchContext() {
         try {
-            const response = await fetch('/api/translate');
+            const response = await fetch('/api/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    selected,
+                    prompt
+                })
+            });
+
             const data = await response.json();
-            if (data.error) {
-                error = data.error;
+            console.log(selected)
+            console.log(prompt)
+            
+            if (response.ok) {
+                context = data.contexts
+                error = "";
             } else {
-                haiku = data.haiku;
+                context = "";
+                error = data.error || "Failed to generate contexts.";
             }
         } catch (e) {
-            error = "Failed to fetch the haiku.";
+            error = "Failed to fetch the contexts.";
             console.error(e);
         }
     }
 </script>
 
-<h1>Translate</h1>
-<button on:click={fetchHaiku}>Get Haiku</button>
+<form onsubmit={fetchContext}>
+	<select bind:value={selected} onchange={() => (prompt = '')}>
+		{#each languages as language}
+			<option value={language}>
+				{language}
+			</option>
+		{/each}
+	</select>
 
-{#if haiku}
-    <p><strong>Haiku:</strong> {haiku}</p>
+	<input bind:value={prompt} />
+
+	<button disabled={!prompt} type="submit"> Submit </button>
+</form>
+
+{#if context}
+    <p><strong>Context:</strong> {context}</p>
 {/if}
 
 {#if error}
