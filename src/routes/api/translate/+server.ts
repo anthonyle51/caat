@@ -18,9 +18,13 @@ export async function POST({ request }: {request: Request}) {
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: `You are a translator. Given the input from the user, give three context which would give them different translations. The language you are to give them context for is ${selected}. Only give the context. Do not give an explation. For example, if you were to be asked to translate "hello", some contexts could be: You are talking to your mom, you are talking to a friend, etc.` },
+                {
+                    "role": "system",
+                    "content": "You are a precise and context-aware translator. Given the user's input, detect the input language and provide three distinct contexts in that same language where the word or phrase could have different translations.\n\nThen, translate the word or phrase into ${selected}, considering each context. Return a JSON object where:\n\n- The keys are the specific contexts in the detected input language.\n- The values are the appropriate translations in ${selected} based on those contexts.\n\nEnsure the contexts are detailed enough to clarify the differences in meaning. Do not provide explanations, only return the JSON object."
+                },          
                 { role: "user", content: prompt },
             ],
+            response_format: { type: "json_object" },
             store: true,
         });
 

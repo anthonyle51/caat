@@ -1,7 +1,7 @@
 <script lang="ts">
     let languages = ['Korean', 'Japanese', 'Vietnamese'];
 
-	let selected = '';
+	let selected = 'Korean';
 	let prompt = '';
     let context = '';
     let error = '';
@@ -46,7 +46,7 @@
 		{/each}
 	</select>
 
-	<input bind:value={prompt} />
+	<input bind:value={prompt} placeholder="Enter Text"/>
 
 	<button disabled={!prompt} type="submit"> Submit </button>
 </form>
